@@ -1,0 +1,33 @@
+- name: Add group for project
+  group: name={{ appgroup }}
+
+- name: Add user for project
+  user: name={{ appuser }} group={{ appgroup }} password={{ appuser_passward }}
+
+- name: Make directories
+  file: path={{ appuser_root }}/src state=directory owner={{ appuser }} group={{ appgroup }}
+
+- name: Set user bashrc
+  template: src=appuser_bashrc.j2 dest=/home/{{ appuser }}/.bashrc
+
+- name: Set user bash_profile
+  template: src=appuser_bash_profile.j2 dest=/home/{{ appuser }}/.bash_profile
+
+- name: Install epel-release for replacing repository to EPEL
+  yum: name=epel-release state=latest
+
+- name: Install base package group
+  yum: name='@base' state=latest
+
+- name: Install utility packages
+  yum: name={{ item }} enablerepo=epel state=latest
+  with_items:
+    - gcc
+    - psmisc
+    - sysstat
+    - lsof
+    - nmap
+    - traceroute
+
+- name: Sysstat should be starting
+  service: name=sysstat state=started enabled=yes

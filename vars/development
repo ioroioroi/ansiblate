@@ -1,0 +1,4 @@
+env: development
+"{{ projectname }}"_web_version: master
+"{{ projectname }}"_websocket_version: master
+"{{ projectname }}"_batch_version: master

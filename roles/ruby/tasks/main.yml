@@ -1,0 +1,41 @@
+- name: Remove default ruby
+  yum: name=ruby state=absent
+
+- name: Install dependent packages of ruby
+  yum: name={{ item }} enablerepo=epel state=latest
+  with_items:
+    - zlib-devel
+    - openssl-devel
+    - libffi-devel
+
+- name: Check if ruby is installed
+  sudo: no
+  ignore_errors: yes
+  command: which ruby
+  register: is_ruby_installed
+
+- name: Download ruby
+  get_url: url=http://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.1.tar.gz dest={{ project_root }}/src
+  when: is_ruby_installed | failed
+
+- name: Unpacking ruby.tar.gz
+  unarchive: src={{ project_root }}/src/ruby-2.3.1.tar.gz dest={{ project_root }}/src copy=no
+  when: is_ruby_installed | failed
+
+- name: Install ruby
+  command: "{{ item }} chdir={{ project_root }}/src/ruby-2.3.1"
+  with_items:
+    - ./configure --prefix=/usr/local
+    - make
+    - make install
+  when: is_ruby_installed | failed
+
+- name: Update rubygems
+  command: /usr/local/bin/gem update --system
+
+- name: Install bundler by rubygems
+  gem:
+    name=bundler
+    version=1.10.2
+    executable=/usr/local/bin/gem
+    user_install=False

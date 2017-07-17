@@ -1,0 +1,8 @@
+- name: Firewalld should be starting
+  service: name=firewalld state=started enabled=yes
+
+- name: Add http port
+  firewalld: zone=public service=http permanent=true state=enabled
+
+- name: Reload firewalld
+  command: firewall-cmd --reload

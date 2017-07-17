@@ -1,0 +1,12 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+        fi
+
+# User specific aliases and functions
+export DOCKER_HOST=tcp://{{ inventory_hostname }}:4243
+#export DOCKER_HOST=tcp://127.0.0.1:4243
+
+alias ll='ls -la -G'

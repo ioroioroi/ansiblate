@@ -1,0 +1,10 @@
+- name: Install chrony
+  yum: name={{ item }} enablerepo=epel state=latest
+  with_items:
+    - chrony
+
+- name: Ntpd(chronyd) should be starting
+  service: name=chronyd state=started enabled=yes
+
+- name: Set timezone
+  command: timedatectl set-timezone Asia/Tokyo

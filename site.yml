@@ -1,0 +1,50 @@
+---
+- name: Exec common role
+  hosts: all
+  sudo: yes
+  vars:
+    - projectname = ansiblate
+  vars_files:
+    - secrets.yml
+  roles:
+    - common
+    - ntp
+    # - { role: mackerel, when: "env == 'production'" }
+
+# - name: Setup GUI enviroment
+#   hosts: xwindows
+#   sudo: yes
+#   roles:
+#     - xwindows
+#     - firefox
+#
+# - name: Setup web server with apache
+#   hosts: apache
+#   sudo: yes
+#   roles:
+#     - apache
+#    - firewalld
+#
+# - name: Setup proxy server
+#  hosts: proxy
+#  sudo: yes
+#  roles:
+#    - nginx
+#    - firewalld
+#
+# - name: Setup development enviroment with ruby
+#   hosts: ruby
+#   sudo: yes
+#   roles:
+#     - git
+#     - ruby
+#     - postgresql
+#
+# - name: Setup development enviroment with java
+#   hosts: java
+#   sudo: yes
+#   roles:
+#     - git
+#     - java
+#     - tomcat
+#     - postgresql
