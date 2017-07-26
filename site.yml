@@ -1,15 +1,25 @@
 ---
+# - name: Exec common role
+#   hosts: all
+#   sudo: yes
+#   vars:
+#     - projectname = ansiblate
+#   vars_files:
+#     - secrets.yml
+#   roles:
+#     - common
+#     - ntp
+    # - { role: mackerel, when: "env == 'production'" }
+
 - name: Exec common role
-  hosts: all
+  hosts: varidater
   sudo: yes
   vars:
-    - projectname = ansiblate
-  vars_files:
-    - secrets.yml
+    projectname: ansiblate
+    project_root: varidater
   roles:
-    - common
-    - ntp
-    # - { role: mackerel, when: "env == 'production'" }
+    - python
+    # - common
 
 # - name: Setup GUI enviroment
 #   hosts: xwindows

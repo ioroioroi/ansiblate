@@ -1,21 +1,20 @@
-[development:children]
-xwindows
-apache
-proxy
+[development-server:children]
+python
 ruby
-java
+varidater
 
-[xwindows]
-192.168.33.255
+[product-server:children]
+mate
 
-[apache]
-192.168.33.255
-
-[proxy]
-192.168.33.255
+[python]
+192.168.33.250
 
 [ruby]
-192.168.33.255
+192.168.33.150
+192.168.33.250
 
-[java]
-192.168.33.255
+[mate]
+192.168.33.150
+
+[varidater]
+192.168.33.250

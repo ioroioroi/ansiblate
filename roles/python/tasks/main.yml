@@ -1,0 +1,36 @@
+---
+- name: Check if python2.x is installed
+  sudo: no
+  ignore_errors: yes
+  command: which python
+  register: is_python_installed
+
+- name: Check if python3.x is installed
+  sudo: no
+  ignore_errors: yes
+  command: which python3
+  register: is_python3_installed
+
+- name: Install auxiliary packages for python3 with yum
+  yum: name={{ item }} state=latest
+  with_items: "{{ python_auxiliary }}"
+  when: is_python3_installed | failed
+
+- name: Download Python source package and Unarchive
+  unarchive:
+    src: "{{ python_url }}"
+    dest: "{{ python_tmp }}"
+    remote_src: True
+  when: is_python3_installed | failed
+
+- name: Install python3
+  shell: cd "{{ python_dir }}" && ./configure --prefix=/usr/local/python && make && make install
+  when: is_python3_installed | failed
+
+- file:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    state: link
+  with_items:
+    - { src: '/usr/local/python/bin/python3', dest: '/usr/local/bin/python' }
+    - { src: '/usr/local/python/bin/pip3'   , dest: '/usr/local/bin/pip'    }

@@ -1,0 +1,9 @@
+[defaults]
+hostfile = ./hosts
+remote_user = vagrant
+private_key_file= $HOME/.vagrant.d/insecure_private_key
+ask_pass = True
+become = True
+become_method = sudo
+become_user = root
+become_ask_pass=True

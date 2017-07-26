@@ -1,0 +1,15 @@
+---
+
+python_tmp: /tmp
+python_url: https://www.python.org/ftp/python/3.6.2/Python-3.6.2.tgz
+python_dir: /tmp/Python-3.6.2
+python_auxiliary:
+   - wget
+   - zlib-devel
+   - bzip2-devel
+   - openssl-devel
+   - ncurses-devel
+   - sqlite-devel
+   - readline-devel
+   - tk-devel
+   - gcc
