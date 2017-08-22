@@ -23,6 +23,7 @@
     1. $ ansible-vault encrypt secrets.yml
 
 ## How to use
+* `$ ansible-playbook site.yml -i development -vvvv`
 * `$ ansible-playbook site.yml -i development -K -vvvv --ask-vault-pass`
 
 

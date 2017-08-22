@@ -1,14 +1,8 @@
 ---
-- name: Check if python2.x is installed
-  sudo: no
-  ignore_errors: yes
-  command: which python
-  register: is_python_installed
-
 - name: Check if python3.x is installed
   sudo: no
   ignore_errors: yes
-  command: which python3
+  command: test -e /usr/local/python/bin/python3
   register: is_python3_installed
 
 - name: Install auxiliary packages for python3 with yum
@@ -33,4 +27,5 @@
     state: link
   with_items:
     - { src: '/usr/local/python/bin/python3', dest: '/usr/local/bin/python' }
-    - { src: '/usr/local/python/bin/pip3'   , dest: '/usr/local/bin/pip'    }
+    - { src: '/usr/local/python/bin/pip3'   , dest: '/usr/local/bin/pip' }
+  when: is_python3_installed | failed

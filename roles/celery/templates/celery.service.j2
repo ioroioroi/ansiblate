@@ -1,0 +1,17 @@
+[Unit]
+Description=Celery Service
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+User={{ appuser }}
+Group={{ appgroup }}
+EnvironmentFile=-/home/{{ appuser }}/{{ project_name }}/{{ project_name }}/{{ project_name }}/celery.conf
+WorkingDirectory=/home/{{ appuser }}/{{ project_name }}/{{ project_name }}
+
+ExecStart=/bin/sh -c '${CELERY_BIN} multi start $CELERYD_NODES -A $CELERY_APP --pidfile=${CELERYD_PID_FILE} --logfile=${CELERYD_LOG_FILE} --loglevel="${CELERYD_LOG_LEVEL}" $CELERYD_OPTS'
+ExecStop=/bin/sh -c '${CELERY_BIN} multi stopwait $CELERYD_NODES --pidfile=${CELERYD_PID_FILE}'
+ExecReload=/bin/sh -c '${CELERY_BIN} multi restart $CELERYD_NODES -A $CELERY_APP --pidfile=${CELERYD_PID_FILE} --logfile=${CELERYD_LOG_FILE} --loglevel="${CELERYD_LOG_LEVEL}" $CELERYD_OPTS'
+
+[Install]
+WantedBy=multi-user.target

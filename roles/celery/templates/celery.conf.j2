@@ -1,0 +1,19 @@
+# See
+# http://docs.celeryproject.org/en/latest/userguide/daemonizing.html#usage-systemd
+
+# Names of projects
+CELERY_APP="{{ project_name }}"
+
+# Names of nodes to start (3worker sets)
+CELERYD_NODES="worker"
+
+# Extra arguments
+CELERYD_OPTS=""
+
+# How to call celery
+CELERY_BIN="/home/{{ appuser }}/{{ project_name }}/bin/celery"
+
+# %n will be replaced with the nodename
+CELERYD_PID_FILE="/home/{{ appuser }}/{{ project_name }}/{{ project_name }}/logs/celery/%n.pid"
+CELERYD_LOG_FILE="/home/{{ appuser }}/{{ project_name }}/{{ project_name }}/logs/celery/%n%I.log"
+CELERYD_LOG_LEVEL="INFO"

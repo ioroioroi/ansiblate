@@ -1,0 +1,25 @@
+- name: Install dependency packages
+  yum: name="python-psycopg2"
+
+- name: Install postgres
+  yum: name={{ item }} state=latest
+  with_items:
+    - "postgresql-server"
+    - "postgresql-devel"
+    - "postgresql-contrib"
+
+- name: Init db
+  command: "/bin/initdb --encoding=UTF8 --no-locale --pgdata=/var/lib/pgsql/data"
+  become_user: postgres
+  ignore_errors: true
+
+- name: Set postgres config
+  template: src="pg_hba.conf.j2" dest="/var/lib/pgsql/data/pg_hba.conf"
+  notify: restart postgres
+
+- name: Postgres should be starting and enabled
+  service: name=postgresql state=started enabled=yes
+
+- name: Create user
+  postgresql_user: name={{ project_name }} role_attr_flags=SUPERUSER,CREATEDB
+  become_user: postgres

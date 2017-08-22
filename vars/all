@@ -1,8 +1,8 @@
-appuser: "{{ projectname }}"
-appgroup: "{{ projectname }}"
-appuser_root: '/home/"{{ projectname }}"'
-project_root: '/home/"{{ projectname }}"/"{{ projectname }}"'
-app_root: '/home/"{{ projectname }}"/"{{ projectname }}"/app'
+appuser: "{{ project_name }}"
+appgroup: "{{ project_name }}"
+appuser_root: '/home/"{{ project_name }}"'
+project_root: '/home/"{{ project_name }}"/"{{ project_name }}"'
+app_root: '/home/"{{ project_name }}"/"{{ project_name }}"/app'
 git_version: git-2.9.4
 web_repository_name: ansiblate-web
 websocket_repository_name: ansiblate-websocket

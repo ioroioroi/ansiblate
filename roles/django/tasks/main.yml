@@ -1,0 +1,65 @@
+---
+- name: Reload bash_profile
+  shell: source /home/{{ appuser }}/.bash_profile
+
+- name: Check if project_folder is installed
+  sudo: no
+  ignore_errors: yes
+  command: test -e /home/{{ appuser }}/{{ project_name }}
+  register: is_venv_structed
+
+- name: Activate ProjectVirtualEnviroment
+  shell: /usr/local/bin/python -m venv /home/{{ appuser }}/{{ project_name }}
+  when: is_venv_structed | failed
+
+# 仮想環境内のpipを使えば仮想環境内のlibにインストールしてくれるらしい
+- name: Install django into virtualenv with pip
+  pip:
+    name: "{{ item }}"
+    executable: /home/{{ appuser }}/{{ project_name }}/bin/pip
+    state: present
+  with_items:
+    - django
+
+- name: Check if project_folder is created
+  sudo: no
+  ignore_errors: yes
+  command: test -e /home/{{ appuser }}/{{ project_name }}/{{ project_name }}
+  register: is_projectdirectory_structed
+
+- name: create project_directory
+  file:
+    path: /home/{{ appuser }}/{{ project_name }}/{{ project_name }}
+    state: directory
+    owner: "{{ appuser }}"
+    group: wheel
+    recurse: yes
+  when: is_projectdirectory_structed | failed
+
+- name: StartProject
+  shell: /home/{{ appuser }}/{{ project_name }}/bin/django-admin startproject {{ project_name }} /home/{{ appuser }}/{{ project_name }}/{{ project_name }}
+
+- name: chown project_directory
+  file:
+    path: /home/{{ appuser }}/{{ project_name }}
+    state: directory
+    owner: "{{ appuser }}"
+    group: wheel
+    recurse: yes
+  when: is_venv_structed | failed
+
+- name: chown project/project_directory
+  file:
+    path: /home/{{ appuser }}/{{ project_name }}/{{ project_name }}/{{ project_name }}
+    state: directory
+    owner: "{{ appuser }}"
+    group: wheel
+    recurse: yes
+
+- name: chown logs_directory
+  file:
+    path: /home/{{ appuser }}/{{ project_name }}/{{ project_name }}/logs
+    state: directory
+    owner: "{{ appuser }}"
+    group: "{{ appgroup }}"
+    recurse: yes

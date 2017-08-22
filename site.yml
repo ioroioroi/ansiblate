@@ -1,25 +1,43 @@
 ---
-# - name: Exec common role
-#   hosts: all
-#   sudo: yes
-#   vars:
-#     - projectname = ansiblate
-#   vars_files:
-#     - secrets.yml
-#   roles:
-#     - common
-#     - ntp
-    # - { role: mackerel, when: "env == 'production'" }
+- name: Exec common role
+  hosts: all
+  sudo: yes
+  vars:
+    - projectname = ansiblate
+  vars_files:
+    - secrets.yml
+  roles:
+    - common
+    - ntp
+    - { role: mackerel, when: "env == 'production'" }
 
 - name: Exec common role
   hosts: varidater
   sudo: yes
   vars:
-    projectname: ansiblate
-    project_root: varidater
+    project_name: varidater
+    appuser: "{{ project_name }}"
+    appgroup: "wheel"
+    appuser_root: '/home/"{{ project_name }}"'
+    project_root: '/home/"{{ project_name }}"/"{{ project_name }}"'
+    app_root: '/home/"{{ project_name }}"/"{{ project_name }}"/app'
   roles:
-    - python
+    - celery
     # - common
+
+# - name: Exec install python and struct django in virtualenv project.
+#   hosts: python
+#   sudo: yes
+#   vars:
+#     project_name: django-project
+#     appuser: "{{ project_name }}"
+#     appgroup: "{{ project_name }}"
+#     appuser_root: '/home/"{{ project_name }}"'
+#     project_root: '/home/"{{ project_name }}"/"{{ project_name }}"'
+#     app_root: '/home/"{{ project_name }}"/"{{ project_name }}"/app'
+#   roles:
+#     - python
+#     - django
 
 # - name: Setup GUI enviroment
 #   hosts: xwindows

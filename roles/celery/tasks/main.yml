@@ -1,0 +1,123 @@
+---
+- name: Reload bash_profile
+  shell: source /home/{{ appuser }}/.bash_profile
+
+- name: Check if project_folder is installed
+  sudo: no
+  ignore_errors: yes
+  command: test -e /home/{{ appuser }}/{{ project_name }}
+  register: is_venv_structed
+
+- name: Activate ProjectVirtualEnviroment
+  shell: /usr/local/bin/python -m venv /home/{{ appuser }}/{{ project_name }}
+  when: is_venv_structed | failed
+
+- name: chown project_directory
+  file:
+    path: /home/{{ appuser }}/{{ project_name }}
+    state: directory
+    owner: "{{ appuser }}"
+    group: wheel
+    recurse: yes
+
+- name: Install django-celery-with-redis into virtualenv with pip
+  pip:
+    name: "{{ item }}"
+    executable: /home/{{ appuser }}/{{ project_name }}/bin/pip
+    state: present
+  with_items:
+    - django-celery-with-redis
+
+- name: Insert setting text in file __init__.py
+  blockinfile:
+    dest: /home/{{ appuser }}/{{ project_name }}/{{ project_name }}/{{ project_name }}/__init__.py
+    backup: yes
+    content: |
+      from __future__ import absolute_import
+
+      # This will make sure the app is always imported when
+      # Django starts so that shared_task will use this app.
+      from .celery import app as celery_app
+
+- name: Insert setting text in file celery.py
+  blockinfile:
+    dest: /home/{{ appuser }}/{{ project_name }}/{{ project_name }}/{{ project_name }}/celery.py
+    backup: yes
+    create: yes
+    owner: "{{ appuser }}"
+    group: "{{ appgroup }}"
+    insertafter: EOF
+    content: |
+      from __future__ import absolute_import
+      import os
+      from celery import Celery
+      from django.conf import settings
+
+      # set the default Django settings module for the 'celery' program.
+      os.environ.setdefault('DJANGO_SETTINGS_MODULE', '{{ project_name }}.settings')
+      app = Celery('{{ project_name }}')
+
+      # Using a string here means the worker will not have to
+      # pickle the object when using Windows.
+      app.config_from_object('django.conf:settings')
+      app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+
+      @app.task(bind=True)
+      def debug_task(self):
+          print('Request: {0!r}'.format(self.request))
+
+
+- name: Insert setting text in file settings.py
+  blockinfile:
+    dest: /home/{{ appuser }}/{{ project_name }}/{{ project_name }}/{{ project_name }}/settings.py
+    backup: yes
+    insertafter: EOF
+    content: |
+      # CELERY STUFF
+      import djcelery
+      djcelery.setup_loader()
+      BROKER_URL = 'redis://localhost:6379'
+      CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+      CELERY_ACCEPT_CONTENT = ['application/json']
+      CELERY_TASK_SERIALIZER = 'json'
+      CELERY_RESULT_SERIALIZER = 'json'
+      CELERY_TIMEZONE = 'Asia/Tokyo'
+
+
+- name: Insert setting text in file settings.py after Installing
+  blockinfile:
+    dest: /home/{{ appuser }}/{{ project_name }}/{{ project_name }}/{{ project_name }}/settings.py
+    backup: no
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - djcelery set"
+    insertafter: "INSTALLED_APPS = "
+    content: |
+      # CELERY APP SET
+          'djcelery',
+          'kombu.transport.django',
+
+- name: Makemigration djcelery
+  shell: /home/{{ appuser }}/{{ project_name }}/bin/python /home/{{ appuser }}/{{ project_name }}/{{ project_name }}/manage.py makemigrations djcelery
+
+- name: Migration djcelery
+  shell: /home/{{ appuser }}/{{ project_name }}/bin/python /home/{{ appuser }}/{{ project_name }}/{{ project_name }}/manage.py migrate djcelery
+
+- name: create Celery's log directory
+  file:
+    path: /home/{{ appuser }}/{{ project_name }}/{{ project_name }}/logs/celery
+    state: directory
+    owner: "{{ appuser }}"
+    group: "{{ appgroup }}"
+    recurse: yes
+
+- name: Add Celery EnviromentFile
+  template: src=celery.conf.j2 dest=/home/{{ appuser }}/{{ project_name }}/{{ project_name }}/{{ project_name }}/celery.conf owner={{ appuser }} group={{ appgroup }} mode=0755
+
+- name: Add Celery as service
+  template: src=celery.service.j2 dest=/etc/systemd/system/celery.service owner=root group=root mode=0644
+
+- name: Exec daemon-reload
+  command: systemctl daemon-reload
+
+- name: Celery should be started
+  service: name=celery enabled=yes state=started
