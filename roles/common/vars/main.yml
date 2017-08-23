@@ -1,0 +1,4 @@
+appuser: varidater
+appgroup: wheel
+appuser_password: varidater
+appuser_root: /home/{{ appuser }}

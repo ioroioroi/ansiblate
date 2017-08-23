@@ -1,8 +1,8 @@
 - name: install apache
   yum: name=httpd state=latest
 
-- name: allow HTTP for firewalld
-  firewalld: permanent=true service=http state=enabled immediate=true
+# - name: allow HTTP for firewalld
+#   firewalld: permanent=true service=http state=enabled immediate=true
 
 - name: start httpd service automaticaly
   service: name=httpd state=started enabled=yes

@@ -1,0 +1,5 @@
+gatling_dir : "gatling-charts-highcharts-bundle-{{ gatling_version }}"
+gatling_archive : "{{ gatling_dir }}-bundle"
+gatling_version : "2.2.5"
+gatling_url     : "https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/{{ gatling_version }}/{{ gatling_archive }}.zip"
+install_dir     : "/usr/local/src"

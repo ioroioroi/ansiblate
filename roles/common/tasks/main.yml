@@ -1,8 +1,9 @@
+---
 - name: Add group for project
   group: name={{ appgroup }}
 
 - name: Add user for project
-  user: name={{ appuser }} group={{ appgroup }} password={{ appuser_passward }}
+  user: name={{ appuser }} group={{ appgroup }} password={{ appuser_password }}
 
 - name: Make directories
   file: path={{ appuser_root }}/src state=directory owner={{ appuser }} group={{ appgroup }}
@@ -28,6 +29,8 @@
     - lsof
     - nmap
     - traceroute
+    - zip
+    - unzip
 
 - name: Sysstat should be starting
   service: name=sysstat state=started enabled=yes

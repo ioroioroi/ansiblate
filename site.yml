@@ -22,8 +22,8 @@
     project_root: '/home/"{{ project_name }}"/"{{ project_name }}"'
     app_root: '/home/"{{ project_name }}"/"{{ project_name }}"/app'
   roles:
-    - celery
-    # - common
+    - gatling
+    - apache
 
 # - name: Exec install python and struct django in virtualenv project.
 #   hosts: python

@@ -1,0 +1,13 @@
+---
+- name: download oracle jdk 1.8
+  command: 'wget -q -O {{ oracle_java_path }} --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" {{ oracle_java_url }} creates={{ oracle_java_path }}'
+  poll: 10
+
+- name: install oracle jdk
+  yum:
+    name: "{{ oracle_java_path }}"
+    state: present
+
+- name: Remove downloaded archive
+  sudo: yes
+  shell: "rm -f {{ oracle_java_path }}"
