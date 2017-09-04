@@ -1,18 +1,18 @@
 ---
-- name: Exec common role
-  hosts: all
-  sudo: yes
-  vars:
-    - projectname = ansiblate
-  vars_files:
-    - secrets.yml
-  roles:
-    - common
-    - ntp
-    - { role: mackerel, when: "env == 'production'" }
+# - name: Exec common role
+#   hosts: all
+#   sudo: yes
+#   vars:
+#     projectname: ansiblate
+#   vars_files:
+#     - secrets.yml
+#   roles:
+#     - common
+#     - ntp
+#     - { role: mackerel, when: "env == 'production'" }
 
 - name: Exec common role
-  hosts: varidater
+  hosts: validater
   sudo: yes
   vars:
     project_name: varidater
@@ -22,7 +22,6 @@
     project_root: '/home/"{{ project_name }}"/"{{ project_name }}"'
     app_root: '/home/"{{ project_name }}"/"{{ project_name }}"/app'
   roles:
-    - gatling
     - apache
 
 # - name: Exec install python and struct django in virtualenv project.

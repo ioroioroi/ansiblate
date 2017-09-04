@@ -1,7 +1,7 @@
 [development-server:children]
 python
 ruby
-varidater
+validater
 
 [product-server:children]
 mate
@@ -16,5 +16,5 @@ mate
 [mate]
 192.168.33.150
 
-[varidater]
+[validater]
 192.168.33.250
