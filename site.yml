@@ -22,7 +22,7 @@
     project_root: '/home/"{{ project_name }}"/"{{ project_name }}"'
     app_root: '/home/"{{ project_name }}"/"{{ project_name }}"/app'
   roles:
-    - apache
+    - selenium-chrome
 
 # - name: Exec install python and struct django in virtualenv project.
 #   hosts: python

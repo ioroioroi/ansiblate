@@ -7,6 +7,10 @@
 `$ usermod -G wheel deploy_user`
 `$ passwd deploy_user`
 
+* if use PasswordAuthentication
+- modify target host's`/etc/ssh/sshd_config` => `PasswordAuthentication no` -> `PasswordAuthentication yes`
+- add `ansible.cfg` => `[defaults] ask_pass = True`
+
 ## Files
 * Playbook file : site.yml
 * Inventory files : deployment / production

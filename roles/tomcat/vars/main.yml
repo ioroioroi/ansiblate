@@ -1,0 +1,5 @@
+tomcat_version: apache-tomcat-8.5.20
+tomcat_archive: "{{ tomcat_version }}.tar.gz"
+tomcat_url: http://ftp.jaist.ac.jp/pub/apache/tomcat/tomcat-8/v8.5.20/bin/{{ tomcat_archive }}
+install_dir: /usr/local
+tomcat_path: "{{ install_dir }}/{{ tomcat_version }}"

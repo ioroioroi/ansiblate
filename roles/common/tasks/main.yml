@@ -8,6 +8,9 @@
 - name: Make directories
   file: path={{ appuser_root }}/src state=directory owner={{ appuser }} group={{ appgroup }}
 
+- name: Make directories
+  file: path={{ project_root }} state=directory owner={{ appuser }} group={{ appgroup }}
+  
 - name: Set user bashrc
   template: src=appuser_bashrc.j2 dest=/home/{{ appuser }}/.bashrc
 

@@ -1,0 +1,28 @@
+---
+- name: Install epel-release
+  yum: name=epel-release state=latest
+
+- name: Download chromedriver
+  sudo: yes
+  get_url: url={{ chromedriver_url }} dest={{ install_dir }}
+
+- name: Extract chromedriver
+  sudo: yes
+  unarchive: copy=no src={{ install_dir }}/{{ chromedriver_archive }} dest={{ install_dir }}
+
+- name: Remove downloaded archive
+  sudo: yes
+  shell: "rm -f {{ install_dir }}/{{ chromedriver_archive }}"
+
+- name: Set user google-chrome.repo
+  template: src=google-chrome.repo.j2 dest=/etc/yum.repos.d/google-chrome.repo
+
+- name: Install utility packages
+  yum: name={{ item }} enablerepo=epel state=latest
+  with_items:
+    - libX11
+    - GConf2
+    - fontconfig
+    - google-chrome-unstable
+    - libOSMesa
+    - google-noto-cjk-fonts

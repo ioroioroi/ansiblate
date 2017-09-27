@@ -1,17 +1,18 @@
----
 - name: install apache
   yum: name=httpd state=latest
+
+- name: Create apache group
+  group:
+    name: apache
+    state: present
 
 - name: Create apache user
   user:
     name: apache
     shell: /sbin/nologin
-    groups: apache
+    group: apache
     createhome: yes
     state: present
-
-# - name: allow HTTP for firewalld
-#   firewalld: permanent=true service=http state=enabled immediate=true
 
 - name: chown /var/www/html
   file:

@@ -1,0 +1,17 @@
+[Unit]
+Description=Apache Tomcat 8.5
+After=syslog.target network.target
+
+[Service]
+User=tomcat
+Group=tomcat
+Type=oneshot
+PIDFile=/home/tomcat/tomcat/tomcat.pid
+RemainAfterExit=yes
+
+ExecStart=/home/tomcat/tomcat/bin/startup.sh
+ExecStop=/home/tomcat/tomcat/bin/shutdown.sh
+ExecReStart=/home/tomcat/tomcat/bin/shutdown.sh;/home/tomcat/tomcat/bin/startup.sh
+
+[Install]
+WantedBy=multi-user.target

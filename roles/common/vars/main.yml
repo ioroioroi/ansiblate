@@ -1,4 +1,5 @@
 appuser: varidater
-appgroup: wheel
+appgroup: varidater
 appuser_password: varidater
 appuser_root: /home/{{ appuser }}
+project_root: "{{ appuser_root }}/{{ appuser }}"

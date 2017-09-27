@@ -1,8 +1,23 @@
 - name: Firewalld should be starting
   service: name=firewalld state=started enabled=yes
 
-- name: Add http port
-  firewalld: zone=public service=http permanent=true state=enabled
+- name: Add service ports to public zone
+  firewalld: zone=public service={{ item }} permanent=true state=enabled
+  with_items:
+    - http
+    - ssh
+
+- name: Enabling firewalld services on the limited Servers to public zone
+  firewalld: rich_rule='rule family="ipv4" source address="{{ item.address }}" service name="{{ item.service }}" accept' permanent=true immediate=yes state=enabled zone=public
+  with_items:
+    - { address: 192.168.0.0/24, service: http }
+    - { address: 192.168.0.0/24, service: https }
+
+- name: Enabling firewalld ports on the limited Servers to public zone
+  firewalld: rich_rule='rule family="ipv4" source address="{{ item.address }}" port port="{{ item.port }}" protocol="{{item.proto }}" accept' permanent=true immediate=yes state=enabled zone=public
+  with_items:
+    - { port: 80, address: 192.168.0.0/24, proto: tcp }
+    - { port: 443, address: 192.168.0.0/24, proto: tcp }
 
 - name: Reload firewalld
   command: firewall-cmd --reload

@@ -6,8 +6,10 @@
   with_items:
     - curl-devel
     - expat-devel
+    - gettext-devel
     - openssl-devel
     - zlib-devel
+    - gcc
     - perl-ExtUtils-MakeMaker
 
 - name: Check if git is installed
@@ -16,17 +18,32 @@
   command: which git
   register: is_git_installed
 
+- name: Make directories
+  file: path={{ project_root }}/src state=directory owner={{ appuser }} group={{ appgroup }}
+  when: is_git_installed | failed
+
 - name: Download git.tar.gz
-  get_url: url=https://www.kernel.org/pub/software/scm/git/{{ git_version }}.tar.gz dest={{ project_root }}/src
+  get_url: url=https://www.kernel.org/pub/software/scm/git/{{ git_version }}.tar.gz dest={{ project_root }}/src/
   when: is_git_installed | failed
 
 - name: Unpacking git.tar.gz
   unarchive: src={{ project_root }}/src/{{ git_version }}.tar.gz dest={{ project_root }}/src copy=no
   when: is_git_installed | failed
 
-- name: Install git
-  command: "{{ item }} chdir={{ project_root }}/src/{{ git_version }}"
-  with_items:
-    - make prefix=/usr/local all
-    - make prefix=/usr/local install
+- name: make all
+  sudo: yes
+  make:
+    chdir: "{{ project_root }}/src/{{ git_version }}"
+    target: all
+    params:
+      prefix: /usr/local
+  when: is_git_installed | failed
+
+- name: make install
+  sudo: yes
+  make:
+    chdir: "{{ project_root }}/src/{{ git_version }}"
+    target: install
+    params:
+      prefix: /usr/local
   when: is_git_installed | failed

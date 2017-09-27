@@ -1,0 +1,58 @@
+---
+- name: Create tomcat group
+  group:
+    name: tomcat
+    state: present
+
+- name: Create tomcat user
+  user:
+    name: tomcat
+    shell: /sbin/nologin
+    group: tomcat
+    createhome: yes
+    state: present
+
+- name: download tomcat
+  command: 'wget {{ tomcat_url }} -P /tmp'
+  poll: 10
+
+- name: Extract tomcat
+  sudo: yes
+  unarchive: copy=no src=/tmp/{{ tomcat_archive }} dest={{ install_dir }}
+
+- name: Remove downloaded archive
+  sudo: yes
+  shell: "rm -rf /tmp/{{ tomcat_archive }}"
+
+- name: chown tomcat
+  file:
+    path: "{{ tomcat_path }}"
+    state: directory
+    owner: tomcat
+    group: tomcat
+    recurse: yes
+
+- name: Create symboliclink for tomcat
+  file:
+    src: '{{ tomcat_path }}'
+    dest: /home/tomcat/tomcat
+    owner: tomcat
+    group: tomcat
+    state: link
+
+- name: Add tomcat EnviromentFile
+  template: src=setenv.sh.j2 dest={{ tomcat_path }}/bin/setenv.sh owner=tomcat group=tomcat mode=0644
+
+- name: Add tomcat as service
+  template: src=tomcat.service.j2 dest=/etc/systemd/system/tomcat.service owner=root group=root mode=0755
+
+- name: tomcat should be started
+  service: name=tomcat enabled=yes state=started
+
+- name: chown /var/www/html
+  file:
+    path: /var/www/html
+    state: directory
+    owner: tomcat
+    group: tomcat
+    recurse: yes
