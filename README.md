@@ -11,10 +11,24 @@
 - modify target host's`/etc/ssh/sshd_config` => `PasswordAuthentication no` -> `PasswordAuthentication yes`
 - add `ansible.cfg` => `[defaults] ask_pass = True`
 
+* If you use AWS as infrastructure, you need plus
+`$ sudo cp -arp /home/<ec2-user or centos>/.ssh /home/deploy_user/`
+`$ sudo chown -R deploy_user /home/deploy_user/.ssh`
+`$ sudo visudo -f /etc/sudoers.d/cloud-init`
+`deploy_user ALL = (ALL) ALL  #<- 追記`
+
+* Check this vars for your project
+`vars/all`
+
 ## Files
 * Playbook file : site.yml
 * Inventory files : deployment / production
 * Config file : ansible.cfg
+* under tasks always read the vars file, `vars/all`
+  - common
+  - git
+  - ruby
+
 
 ## Check List
 * target hosts in /site.yml

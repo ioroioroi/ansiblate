@@ -12,17 +12,16 @@
 #     - { role: mackerel, when: "env == 'production'" }
 
 - name: Exec common role
-  hosts: validater
+  hosts: mate
   sudo: yes
   vars:
-    project_name: varidater
+    project_name: mate
     appuser: "{{ project_name }}"
-    appgroup: "wheel"
+    appgroup: "{{ project_name }}"
     appuser_root: '/home/"{{ project_name }}"'
     project_root: '/home/"{{ project_name }}"/"{{ project_name }}"'
-    app_root: '/home/"{{ project_name }}"/"{{ project_name }}"/app'
   roles:
-    - selenium-chrome
+    - confirm-connect
 
 # - name: Exec install python and struct django in virtualenv project.
 #   hosts: python

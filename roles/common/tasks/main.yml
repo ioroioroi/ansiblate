@@ -1,4 +1,8 @@
 ---
+- name: Include vars
+  include_vars:
+    file: vars/all.yml
+
 - name: Add group for project
   group: name={{ appgroup }}
 
@@ -10,7 +14,7 @@
 
 - name: Make directories
   file: path={{ project_root }} state=directory owner={{ appuser }} group={{ appgroup }}
-  
+
 - name: Set user bashrc
   template: src=appuser_bashrc.j2 dest=/home/{{ appuser }}/.bashrc
 
@@ -27,6 +31,7 @@
   yum: name={{ item }} enablerepo=epel state=latest
   with_items:
     - gcc
+    - gcc-c++
     - psmisc
     - sysstat
     - lsof

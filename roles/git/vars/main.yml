@@ -1,1 +1,5 @@
-git_version: git-2.9.4
+git_version: 'git-2.9.4'
+web_repository_name: ansiblate-web
+websocket_repository_name: ansiblate-websocket
+batch_repository_name: ansiblate-batch
+git_repository_url: git@gitlab.com:ansiblate

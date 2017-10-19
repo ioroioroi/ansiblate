@@ -1,3 +1,8 @@
+---
+- name: Include vars
+  include_vars:
+    file: vars/all.yml
+
 - name: Remove default git
   yum: name=git state=absent
 
@@ -19,21 +24,21 @@
   register: is_git_installed
 
 - name: Make directories
-  file: path={{ project_root }}/src state=directory owner={{ appuser }} group={{ appgroup }}
+  file: path={{ appuser_root }}/src state=directory owner={{ appuser }} group={{ appgroup }}
   when: is_git_installed | failed
 
 - name: Download git.tar.gz
-  get_url: url=https://www.kernel.org/pub/software/scm/git/{{ git_version }}.tar.gz dest={{ project_root }}/src/
+  get_url: url=https://www.kernel.org/pub/software/scm/git/{{ git_version }}.tar.gz dest={{ appuser_root }}/src/
   when: is_git_installed | failed
 
 - name: Unpacking git.tar.gz
-  unarchive: src={{ project_root }}/src/{{ git_version }}.tar.gz dest={{ project_root }}/src copy=no
+  unarchive: src={{ appuser_root }}/src/{{ git_version }}.tar.gz dest={{ appuser_root }}/src copy=no
   when: is_git_installed | failed
 
 - name: make all
   sudo: yes
   make:
-    chdir: "{{ project_root }}/src/{{ git_version }}"
+    chdir: "{{ appuser_root }}/src/{{ git_version }}"
     target: all
     params:
       prefix: /usr/local
@@ -42,7 +47,7 @@
 - name: make install
   sudo: yes
   make:
-    chdir: "{{ project_root }}/src/{{ git_version }}"
+    chdir: "{{ appuser_root }}/src/{{ git_version }}"
     target: install
     params:
       prefix: /usr/local

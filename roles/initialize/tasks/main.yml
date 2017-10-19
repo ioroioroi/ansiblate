@@ -1,0 +1,21 @@
+---
+- name: upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+
+- name: Create symboliclink for Asia/Tokyo Time
+  file:
+    src: /usr/share/zoneinfo/Asia/Tokyo
+    dest: /etc/localtime
+    state: link
+
+- name: Add clock for Asia/Tokyo Time
+  template:
+    src: clock.j2
+    dest: /etc/sysconfig/clock
+
+- name: Modify SeLinuxConfig
+  template:
+    src: config.j2
+    dest: /etc/selinux/config

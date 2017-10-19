@@ -1,3 +1,8 @@
+---
+- name: Include vars
+  include_vars:
+    file: vars/all.yml
+
 - name: Remove default ruby
   yum: name=ruby state=absent
 
@@ -15,15 +20,17 @@
   register: is_ruby_installed
 
 - name: Download ruby
-  get_url: url=http://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.1.tar.gz dest={{ project_root }}/src
+  get_url:
+    url: "{{ ruby_path }}"
+    dest: "{{ appuser_root }}/src/"
   when: is_ruby_installed | failed
 
 - name: Unpacking ruby.tar.gz
-  unarchive: src={{ project_root }}/src/ruby-2.3.1.tar.gz dest={{ project_root }}/src copy=no
+  unarchive: src={{ appuser_root }}/src/{{ ruby_archaive }} dest={{ appuser_root }}/src copy=no
   when: is_ruby_installed | failed
 
 - name: Install ruby
-  command: "{{ item }} chdir={{ project_root }}/src/ruby-2.3.1"
+  command: "{{ item }} chdir={{ appuser_root }}/src/{{ ruby_version }}"
   with_items:
     - ./configure --prefix=/usr/local
     - make

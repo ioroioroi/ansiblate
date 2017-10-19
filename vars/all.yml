@@ -1,0 +1,7 @@
+project_name: ansiblate
+appuser: "{{ project_name }}"
+appgroup: "{{ project_name }}"
+appuser_password: temp
+appuser_root: /home/{{ project_name }}
+project_root: /home/{{ project_name }}/{{ project_name }}
+app_root: /home/{{ project_name }}/{{ project_name }}/app
