@@ -1,0 +1,8 @@
+connections:
+  - SrcIP: 192.168.33.150
+    DstIP: 192.168.33.250
+    DstPort: 22
+
+  - SrcIP: 192.168.33.250
+    DstIP: 192.168.33.150
+    DstPort: 25

@@ -1,0 +1,10 @@
+# 制限事項：delegate_toで指定する全てのサーバには, Site.ymlで指定したhostと同じUser/Passでログイン出来ること
+---
+- name: Include vars
+  include_vars:
+    file: ../files/connections.yml
+
+- name: Netcat to DstIP:DstPort from SrcIP with connections.yml
+  shell: /usr/bin/nc {{ item.DstIP }} {{ item.DstPort }}
+  delegate_to: "{{ item.SrcIP }}"
+  with_items: "{{ connections }}"

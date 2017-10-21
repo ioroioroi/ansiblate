@@ -21,7 +21,7 @@
     appuser_root: '/home/"{{ project_name }}"'
     project_root: '/home/"{{ project_name }}"/"{{ project_name }}"'
   roles:
-    - confirm-connect
+    - connectivity-test
 
 # - name: Exec install python and struct django in virtualenv project.
 #   hosts: python

@@ -1,6 +1,5 @@
 [development-server:children]
-python
-ruby
+mate
 validater
 
 [product-server:children]
