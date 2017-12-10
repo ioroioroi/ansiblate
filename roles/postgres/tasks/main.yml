@@ -28,3 +28,19 @@
 - name: Create user
   postgresql_user: name={{ project_name }} role_attr_flags=SUPERUSER,CREATEDB
   become_user: postgres
+
+- name: Create database
+  postgresql_db:
+    name: "{{ project_name }}"
+    login_user: "{{ project_name }}"
+    port: 5432
+
+- name: Create testuser
+  postgresql_user: name={{ project_name }}_test role_attr_flags=SUPERUSER,CREATEDB
+  become_user: postgres
+
+- name: Create testdatabase
+  postgresql_db:
+    name: "{{ project_name }} _test"
+    login_user: "{{ project_name }}_test"
+    port: 5432
