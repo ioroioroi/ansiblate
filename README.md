@@ -17,18 +17,22 @@
 `$ sudo visudo -f /etc/sudoers.d/cloud-init`
 `deploy_user ALL = (ALL) ALL  #<- 追記`
 
+* if use PortForwarding
+- modify target host's`/etc/ssh/sshd_config` => `#AllowAgentForwarding yes` -> `AllowAgentForwarding yes`
+
+
 * Check this vars for your project
-`vars/all`
+`vars/all.yml`
 
 ## Files
 * Playbook file : site.yml
 * Inventory files : deployment / production
 * Config file : ansible.cfg
-* under tasks always read the vars file, `vars/all`
+* under tasks always read the vars file, `vars/all.yml`
   - common
   - git
   - ruby
-
+  - postgres
 
 ## Check List
 * target hosts in /site.yml
