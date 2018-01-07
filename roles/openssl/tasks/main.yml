@@ -1,0 +1,145 @@
+---
+- name: openssl | installing packages debian
+  apt:
+    pkg: "{{ item }}"
+    state: present
+  when: ansible_os_family == 'Debian'
+  with_items:
+    - openssl
+    - mod_ssl
+
+- name: openssl | installing packages redhat
+  yum:
+    name: "{{ item }}"
+    state: present
+  when: ansible_os_family == 'RedHat'
+  with_items:
+    - openssl
+    - mod_ssl
+
+- name: Ensure python OpenSSL dependencies are installed.
+  pip:
+    executable: /usr/local/bin/pip
+    name: pyOpenSSL
+    state: present
+
+- name: Check if apache is installed
+  sudo: no
+  ignore_errors: yes
+  command: /usr/bin/test -e {{ apache_sslpath }}
+  register: is_apache_installed
+
+- name: Switch ansible_python_interpreter to /usr/local/bin/python.
+  set_fact: ansible_python_interpreter="/usr/local/bin/python"
+
+- name: Generate an OpenSSL private key.
+  openssl_privatekey:
+    path: "{{ apache_sslpath }}/privkey.pem"
+    cipher: aes256
+    passphrase:
+    size: 2024
+    state: present
+    type: RSA
+  when: is_apache_installed | success
+
+- name: Generate an OpenSSL CSR.
+  openssl_csr:
+    path: "{{ apache_sslpath }}/{{ fqdn }}.csr"
+    privatekey_path: "{{ apache_sslpath }}/privkey.pem"
+    country_name: "{{ csr_c }}"
+    state_or_province_name: "{{ csr_st }}"
+    locality_name: "{{ csr_l }}"
+    organization_name: "{{ csr_o }}"
+    common_name: "{{ csr_cn }}"
+    digest: sha256
+    state: present
+  when: is_apache_installed | success
+
+- name: Generate a Self Signed OpenSSL certificate.
+  openssl_certificate:
+    path: "{{ apache_sslpath }}/{{ fqdn }}.pem"
+    privatekey_path: "{{ apache_sslpath }}/privkey.pem"
+    csr_path: "{{ apache_sslpath }}/{{ fqdn }}.csr"
+    provider: selfsigned
+    valid_at: 21171221162800Z
+  when: is_apache_installed | success
+
+- name: Switch back ansible_python_interpreter to /usr/bin/python.
+  set_fact: ansible_python_interpreter="/usr/bin/python"
+
+- name: configure https keys
+  lineinfile:
+    backup: yes
+    backrefs: yes
+    state: present
+    dest: "{{ apache_sslconf }}"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    insertbefore: "{{ item.before }}"
+  with_items:
+    - regexp: "^([ 	]|#)*SSLCertificateFile.*"
+      before: "^[ 	]*SSLCertificateFile"
+      line:   "SSLCertificateFile {{ apache_sslpath }}/{{ fqdn }}.pem"
+    - regexp: "^([ 	]|#)*SSLCertificateKeyFile.*"
+      before: "^[ 	]*SSLCertificateKeyFile"
+      line:   "SSLCertificateKeyFile {{ apache_sslpath }}/privkey.pem"
+    - regexp: "^([ 	]|#)*SSLCertificateChainFile.*"
+      before: "^[ 	]*SSLCertificateChainFile"
+      line:   "SSLCertificateChainFile {{ apache_sslpath }}/{{ fqdn }}.pem"
+  when: is_apache_installed | success
+  notify: restart apache
+
+#
+# - name: enable virtualhost on https
+#   lineinfile: dest=/etc/apache2/ports.conf regexp="^ *NameVirtualHost \*:443" line="    NameVirtualHost *:443" insertafter="<IfModule mod_ssl.c>"
+#   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+
+# - name: Check if nginx is installed
+#   sudo: no
+#   ignore_errors: yes
+#   command: test -e /etc/nginx/ssl/server.key
+#   register: is_nginx_installed
+#
+# - name: create self-signed SSL cert for nginx
+#   command: openssl req -new -nodes -x509 -subj "/C=US/ST=Oregon/L=Portland/O=IT/CN=${ansible_fqdn}" -days 3650 -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.crt -extensions v3_ca creates=/etc/nginx/ssl/server.crt
+#   when: is_nginx_installed | success
+#   notify: restart nginx
+
+# # 下記、ソースからインストールの場合（実績なし）
+# - name: Remove default openssl
+#   yum: name=openssl state=absent
+#
+# - name: Check if openssl is installed
+#   sudo: no
+#   ignore_errors: yes
+#   command: which openssl
+#   register: is_openssl_installed
+#
+# - name: Install utility packages
+#   yum: name={{ item }} enablerepo=epel state=latest
+#   with_items:
+#     - gcc-arm-linux-gnu
+#
+# - name: Download openssl
+#   get_url: url=http://www.openssl.org/source/openssl-1.0.2d.tar.gz dest=/tmp
+#   when: is_openssl_installed | failed
+#
+# - name: Unpacking openssl.tar.gz
+#   unarchive: src=/tmp/openssl-1.0.2d.tar.gz dest=/usr/local/src copy=no
+#   when: is_openssl_installed | failed
+#
+# - name: Install openssl
+#   command: "{{ item }} chdir=/usr/local/src/openssl-1.0.2d"
+#   with_items:
+#     - ./config shared zlib
+#     - make
+#     - make install
+#   when: is_openssl_installed | failed
+#
+# - name: Create symboliclink for openssl
+#   sudo: yes
+#   file:
+#     src: /usr/local/ssl/bin/openssl
+#     dest: /usr/local/bin/openssl
+#     state: link

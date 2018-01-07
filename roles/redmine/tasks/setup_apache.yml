@@ -1,0 +1,60 @@
+---
+- name: Redmineディレクトリ以下のオーナーを変更
+  become: yes
+  file:
+    path: "{{ redmine_dir }}"
+    owner: "{{ redmine_dir_owner }}"
+    group: "{{ redmine_dir_group }}"
+    recurse: yes
+
+- name: Passengerがインストールされているか確認
+  command:
+    test -f /usr/local/bin/passenger-install-apache2-module
+  register:
+    result
+  failed_when: result.rc not in [0, 1]
+  changed_when: false
+
+- name: Passengerをインストール
+  become: yes
+  gem:
+    name=passenger
+    user_install=no
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+  when: result.rc == 1
+
+- name: PassengerのApache用モジュールのインストール
+  become: yes
+  command:
+    passenger-install-apache2-module --auto
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+  when: result.rc == 1
+
+- name: PassengerのApache用モジュールの設定を取得
+  command:
+    passenger-install-apache2-module --snippet
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+  register:
+    passenger_snippet_vars
+  changed_when: false
+
+- name: redmine.confの作成
+  become: yes
+  template:
+    src=redmine.conf
+    dest=/etc/httpd/conf.d/redmine.conf
+
+- name: httpdの再起動
+  become: yes
+  service:
+    name=httpd
+    state=restarted
+    enabled=yes
+
+# 本ファイルの `passenger-install-apache2-module --auto` に
+# 半端に失敗する?ことでapacheのサービスが起動しない自体が確認されてます.
+# その場合はサーバにログイン後rootになり手動で同コマンドを完了することで
+# 改善されることが確認されています. いつか直すけどいったんこれで回避してください.

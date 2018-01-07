@@ -1,0 +1,9 @@
+csr_c: JP
+csr_st: Tokyo
+csr_l: MINATOKU
+csr_o: SOFTBANK
+csr_cn: "{{ fqdn }}"
+fqdn: "{{ inventory_hostname }}"
+apache_sslpath: /etc/httpd/conf
+apache_sslconf: /etc/httpd/conf.d/ssl.conf
+nginx_sslpath: /etc/nginx/ssl

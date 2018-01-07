@@ -1,0 +1,7 @@
+- name: restart apache
+  service: name=httpd state=restarted
+  sudo: yes
+
+- name: restart nginx
+  service: name=nginx state=restarted
+  sudo: yes

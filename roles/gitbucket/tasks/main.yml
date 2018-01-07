@@ -1,0 +1,47 @@
+---
+- name: Check if apache is installed
+  sudo: no
+  ignore_errors: yes
+  command: test -e /etc/httpd/conf.d
+  register: is_apache_installed
+
+- name: download gitbucket
+  command: 'wget {{ gitbucket_url }} -P /tmp'
+  poll: 10
+
+- name: Extract gitbucket
+  sudo: yes
+  shell: /bin/cp /tmp/{{ gitbucket_archive }} {{ install_dir }}/{{ gitbucket_archive }}
+
+- name: chown gitbucket
+  file:
+    path: "{{ install_dir }}/{{ gitbucket_archive }}"
+    state: file
+    owner: tomcat
+    group: tomcat
+    mode: 0750
+
+- name: Remove downloaded archive
+  sudo: yes
+  shell: "rm -rf /tmp/{{ gitbucket_archive }}"
+
+- name: Create /etc/httpd/conf.d/proxy_ajp.conf
+  file:
+    path: /etc/httpd/conf.d/proxy_ajp.conf
+    state: touch
+    mode: 0644
+  when: is_apache_installed | success
+
+- name: Access gitbucket from apache-tomcat
+  lineinfile:
+    path: /etc/httpd/conf.d/proxy_ajp.conf
+    state: present
+    insertafter: EOF
+    line: 'ProxyPass /gitbucket ajp://localhost:8009/gitbucket'
+  when: is_apache_installed | success
+
+- name: tomcat restart
+  service: name=tomcat enabled=yes state=restarted
+
+- name: start httpd service automaticaly
+  service: name=httpd state=restarted enabled=yes

@@ -1,0 +1,12 @@
+---
+# Presetup Systems
+- include: presetup.yml
+
+# Setup PostgreSQL
+- include: setup_postgres.yml
+
+# Install Redmine
+- include: install_redmine.yml
+
+# Setup apache
+- include: setup_apache.yml

@@ -1,0 +1,4 @@
+gitbucket_archive: gitbucket.war
+gitbucket_url: https://github.com/gitbucket/gitbucket/releases/download/3.7/gitbucket.war
+install_dir: /home/tomcat/tomcat/webapps
+gitbucket_path: "{{ install_dir }}/{{ gitbucket_archive }}"
