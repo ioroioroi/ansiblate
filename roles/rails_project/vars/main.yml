@@ -1,0 +1,4 @@
+app_name: railsproj
+app_repo: git@github.com:railsproj/railsproj.git
+app_dir: /home/{{ app_user }}/{{ app_user }}
+env: development

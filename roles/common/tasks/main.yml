@@ -39,10 +39,11 @@
     - traceroute
     - zip
     - unzip
-    - libxml2
-    - libxslt
-    - libxml2-devel
-    - libxslt-devel
+    # - ruby-devel
+    # - zlib-devel
+    # - rubygem-nokogiri
+
+ruby-devel zlib-devel rubygem-nokogiri
 
 - name: Sysstat should be starting
   service: name=sysstat state=started enabled=yes

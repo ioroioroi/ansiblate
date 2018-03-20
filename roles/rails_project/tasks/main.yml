@@ -1,0 +1,55 @@
+- name: Add appliation user
+  user: name={{ app_name }} password=$1$SomeSalt$gFabU8Pxg2srYE5ZhgvHx0
+
+- name: Checkout {{ app_user }}
+  git:
+    repo={{ app_repo }}
+    dest={{ app_dir }}
+    executable=/usr/local/bin/git
+    accept_hostkey=yes
+    version=master
+  notify:
+   - restart app
+
+- name: Change attribute
+  file: path={{ app_dir }} state=directory recurse=yes owner={{ app_name }} group={{ app_name }}
+
+- name: Execute 'bundle install'
+  become_user: {{ app_name }}
+  command: /usr/local/bin/bundle install --path=vendor/bundle chdir={{ app_dir }}
+  environment:
+    PATH: "/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin"
+
+- name: Create Database
+  command: /usr/local/bin/bundle exec rake db:create RAILS_ENV={{ env }} chdir={{ app_dir }}
+  environment:
+    PATH: "/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin"
+
+- name: Exec DB Migration
+  command: /usr/local/bin/bundle exec rake db:migrate RAILS_ENV={{ env }} chdir={{ app_dir }}
+  environment:
+    PATH: "/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin"
+
+- name: Compile assets file
+  command: /usr/local/bin/bundle exec rake assets:precompile RAILS_ENV={{ env }} chdir={{ app_dir }}
+  environment:
+    PATH: "/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin"
+
+- name: Set service file
+  template: src={{ app_name }}.service.j2 dest=/etc/systemd/system/{{ app_name }}.service owner=root group=root mode=0644
+
+- name: Set service env file
+  template: src={{ app_name }}_env.j2 dest=/etc/sysconfig/{{ app_name }} owner=root group=root mode=0644
+
+- name: Exec daemon-reload
+  command: systemctl daemon-reload
+
+- name: railsproj should be started
+  service: name={{ app_name }} enabled=yes state=started
+
+# Use in need
+# - name: Set railsproj rake tasks cron(exec job)
+#   cron: name="exec job"
+#         minute="*/3"
+#         user="{{ app_name }}"
+#         job="export PATH=$PATH:/usr/local/bin && cd {{ app_dir }} && /usr/local/bin/bundle exec rake {{ app_name }}:activity:exec_job

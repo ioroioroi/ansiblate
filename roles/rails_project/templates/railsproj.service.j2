@@ -1,0 +1,15 @@
+[Unit]
+Description={{ app_name }} Application(Ruby)
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+EnvironmentFile=/etc/sysconfig/{{ app_name }}
+PIDFile={{ app_dir }}/tmp/{{ app_name }}.pid
+User={{ app_name }}
+Group={{ app_name }}
+WorkingDirectory={{ app_dir }}
+ExecStart=/usr/local/bin/bundle exec puma -C {{ app_dir }}/config/puma.rb
+
+[Install]
+WantedBy=multi-user.target
