@@ -16,6 +16,10 @@ redmine_dir_group: apache
 # Redmineで使用する日本語フォントファイル
 redmine_font_path: /usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf
 
+# Redmineで使用するメールアドレス（Gmail）
+redmine_mail_address: mymailaddress@gmail.com
+redmine_mail_pass: myMailAddress
+
 # pg_hba.confのパス
 pg_hba_conf_path: /var/lib/pgsql/data/pg_hba.conf
 

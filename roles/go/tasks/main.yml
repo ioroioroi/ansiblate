@@ -1,0 +1,59 @@
+- name: Check if go is installed
+  sudo: no
+  ignore_errors: yes
+  command: which go
+  register: is_go_installed
+
+- name: Download Go
+  sudo: yes
+  get_url: url={{ go_url }} dest={{ install_dir }}
+  when: is_go_installed | failed
+
+- name: Extract Go
+  sudo: yes
+  unarchive: copy=no src={{ install_dir }}/{{ go_archive }} dest={{ install_dir }}
+  when: is_go_installed | failed
+
+- name: Remove downloaded archive
+  sudo: yes
+  shell: "rm -f {{ install_dir }}/{{ go_archive }}"
+  when: is_go_installed | failed
+
+- name: Create symboliclink
+  file:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    state: link
+  with_items:
+    - { src: '{{ install_dir }}/go', dest: '{{ go_symlink }}' }
+
+- name: Set ENVCONST to go.sh
+  lineinfile:
+    path: /etc/profile.d/go.sh
+    insertafter: EOF
+    line: '{{ item }}'
+    create: yes
+  with_items:
+    - 'export GOROOT=/usr/local/go'
+    - 'export GOPATH=/usr/local/go/work'
+    - 'export PATH=$PATH:/usr/local/go/bin'
+  when: is_go_installed | failed
+
+- name: Set ENVCONST to go.csh
+  lineinfile:
+    path: /etc/profile.d/go.csh
+    insertafter: EOF
+    line: '{{ item }}'
+    create: yes
+  with_items:
+    - 'export GOROOT=/usr/local/go'
+    - 'export GOPATH=/usr/local/go/work'
+    - 'export PATH=$PATH:/usr/local/go/bin'
+  when: is_go_installed | failed
+
+- name: Reload profile.d
+  shell: 'source {{ item }}'
+  with_items:
+    - /etc/profile.d/go.sh
+    - /etc/profile.d/go.csh
+  when: is_go_installed | failed

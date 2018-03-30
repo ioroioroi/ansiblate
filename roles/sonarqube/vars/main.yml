@@ -1,0 +1,6 @@
+sonarqube_version : "6.7"
+sonarqube_dir : "sonarqube-{{ sonarqube_version }}"
+sonarqube_archive : "{{ sonarqube_dir }}.zip"
+sonarqube_url     : "https://sonarsource.bintray.com/Distribution/sonarqube/{{ sonarqube_archive }}"
+install_dir     : "/usr/local/src"
+sonarqube_symlink     : "/usr/local/sonarqube/sonar"

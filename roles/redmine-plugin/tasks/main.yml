@@ -1,0 +1,68 @@
+---
+- name: Check if Redmine is installed
+  sudo: no
+  ignore_errors: no
+  command: test -e {{ redmine_dir }}
+  register: is_redmine_installed
+
+- name: Download plugin
+  sudo: yes
+  get_url: url={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: '{{ easygantt_url }}', dest: '{{ install_dir }}' }
+    - { src: '{{ redmine_agile_url }}', dest: '{{ install_dir }}' }
+
+- name: Extract plugin
+  sudo: yes
+  unarchive: copy=no src={{ item.dir }}/{{ item.archive }} dest={{ redmine_dir }}/plugins/
+  with_items:
+    - { dir: '{{ install_dir }}', archive: '{{ easygantt_archive }}' }
+    - { dir: '{{ install_dir }}', archive: '{{ redmine_agile_archive }}' }
+
+- name: Remove downloaded archive
+  sudo: yes
+  shell: "rm -f {{ item.dir }}/{{ item.archive }}"
+  with_items:
+    - { dir: '{{ install_dir }}', archive: '{{ easygantt_archive }}' }
+    - { dir: '{{ install_dir }}', archive: '{{ redmine_agile_archive }}' }
+
+- name: Download plugin from Git
+  sudo: yes
+  git:
+    repo: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+  with_items:
+    - { src: '{{ view_customize_url }}', dest: '{{ view_customize_dir }}' }
+    - { src: '{{ clipboard_image_paste_url }}', dest: '{{ clipboard_image_paste_dir }}' }
+    - { src: '{{ redmine_issue_templates_url }}', dest: '{{ redmine_issue_templates_dir }}' }
+    - { src: '{{ redmine_knowledgebase_url }}', dest: '{{ redmine_knowledgebase_dir }}' }
+    - { src: '{{ redmine_work_time_url }}', dest: '{{ redmine_work_time_dir }}' }
+
+- name: Chown plugin dir
+  file:
+    path: '{{ redmine_dir }}/plugins/'
+    state: directory
+    owner: '{{ redmine_owner }}'
+    group: '{{ redmine_owner }}'
+    recurse: yes
+
+- name: bundle update
+  become_user: '{{ redmine_owner }}'
+  shell: "/usr/local/bin/bundle install --path=vendor/bundle"
+  args:
+    chdir: "{{ redmine_dir }}"
+
+- name: bundle exec rake db:migrate
+  become_user: '{{ redmine_owner }}'
+  shell: "/usr/local/bin/bundle exec rake db:migrate NAME=easy_gantt RAILS_ENV=production"
+  args:
+    chdir: "{{ redmine_dir }}"
+
+- name: bundle exec rake redmine:plugins:migrate
+  become_user: '{{ redmine_owner }}'
+  shell: "/usr/local/bin/bundle exec rake redmine:plugins:migrate RAILS_ENV=production"
+  args:
+    chdir: "{{ redmine_dir }}"
+
+- name: restart httpd service
+  service: name=httpd state=restarted

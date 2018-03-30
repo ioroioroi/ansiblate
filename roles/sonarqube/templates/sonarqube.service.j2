@@ -1,0 +1,15 @@
+[Unit]
+Description=SonarQube
+After=syslog.target network.target network-online.target
+Wants=network-online.target
+
+[Service]
+User=sonar
+Type=forking
+
+ExecStart=/usr/local/sonarqube/sonar/bin/linux-x86-64/sonar.sh start
+ExecStop=/usr/local/sonarqube/sonar/bin/linux-x86-64/sonar.sh stop
+ExecReload=/usr/local/sonarqube/sonar/bin/linux-x86-64/sonar.sh restart
+
+[Install]
+WantedBy=multi-user.target

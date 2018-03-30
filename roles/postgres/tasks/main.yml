@@ -41,6 +41,6 @@
 
 - name: Create testdatabase
   postgresql_db:
-    name: "{{ project_name }} _test"
+    name: "{{ project_name }}_test"
     login_user: "{{ project_name }}_test"
     port: 5432

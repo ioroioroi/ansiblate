@@ -1,0 +1,103 @@
+---
+# SonarQube本体インストール
+- name: Create prometheus group
+  group:
+    name: prometheus
+    state: present
+
+- name: Create prometheus user
+  user:
+    name: prometheus
+    shell: /sbin/nologin
+    group: prometheus
+    createhome: yes
+    state: present
+
+- name: Make directories for Prometheus
+  file:
+    path: "/usr/local/prometheus"
+    state: directory
+
+- name: Check if SonarQube is installed
+  sudo: no
+  ignore_errors: yes
+  command: test -e /usr/local/sonarqube
+  register: is_sonarqube_installed
+
+# curl -LO https://github.com/prometheus/node_exporter/releases/download/v0.14.0/node_exporter-0.14.0.linux-amd64.tar.gz
+- name: Download SonarQube
+  sudo: yes
+  get_url: url={{ sonarqube_url }} dest={{ install_dir }}
+  when: is_sonarqube_installed | failed
+
+- name: Extract SonarQube
+  sudo: yes
+  unarchive: copy=no src={{ install_dir }}/{{ sonarqube_archive }} dest={{ install_dir }}
+  when: is_sonarqube_installed | failed
+
+- name: Remove downloaded archive
+  sudo: yes
+  shell: "rm -f {{ install_dir }}/{{ sonarqube_archive }}"
+  when: is_sonarqube_installed | failed
+
+- name: Create symboliclink
+  file:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    state: link
+  with_items:
+    - { src: '{{ install_dir }}/{{ sonarqube_dir }}', dest: '{{ sonarqube_symlink }}' }
+  when: is_sonarqube_installed | failed
+
+- name: Set ENVCONST to sonarenv.sh
+  lineinfile:
+    path: /etc/profile.d/sonarenv.sh
+    insertafter: EOF
+    line: 'export SONAR_HOME={{ sonarqube_symlink }}'
+    create: yes
+  when: is_sonarqube_installed | failed
+
+- name: Set ENVCONST to sonarenv.sh
+  lineinfile:
+    path: /etc/profile.d/sonarenv.sh
+    insertafter: EOF
+    line: 'export PATH=$PATH:$SONAR_HOME/bin/linux-x86-64'
+    create: yes
+  when: is_sonarqube_installed | failed
+
+- name: Set ENVCONST to sonarenv.csh
+  lineinfile:
+    path: /etc/profile.d/sonarenv.csh
+    insertafter: EOF
+    line: 'export SONAR_HOME={{ sonarqube_symlink }}'
+    create: yes
+  when: is_sonarqube_installed | failed
+
+- name: Set ENVCONST to sonarenv.csh
+  lineinfile:
+    path: /etc/profile.d/sonarenv.csh
+    insertafter: EOF
+    line: 'export PATH=$PATH:$SONAR_HOME/bin/linux-x86-64'
+    create: yes
+  when: is_sonarqube_installed | failed
+
+- name: Set sonar.properties
+  template: src="sonar.properties.j2" dest="{{ sonarqube_symlink }}/conf/sonar.properties"
+  backup: yes
+when: is_sonarqube_installed | failed
+
+
+- name: Chown SONAR_HOME
+  file:
+    path: "/usr/local/sonarqube"
+    state: directory
+    owner: sonar
+    group: sonar
+    recurse: yes
+  notify: restart sonarqube
+
+- name: Add SonarQube as service
+  template: src=sonarqube.service.j2 dest=/etc/systemd/system/sonarqube.service owner=root group=root mode=0755
+
+- name: SonarQube should be started
+  service: name=sonarqube enabled=yes state=started

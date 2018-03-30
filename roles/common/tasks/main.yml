@@ -36,14 +36,17 @@
     - sysstat
     - lsof
     - nmap
+    - nmap-ncat
     - traceroute
     - zip
     - unzip
-    # - ruby-devel
-    # - zlib-devel
-    # - rubygem-nokogiri
-
-ruby-devel zlib-devel rubygem-nokogiri
+    - ruby-devel
+    - zlib-devel
+    - rubygem-nokogiri
+    - libxml2
+    - libxslt
+    - libxml2-devel
+    - libxslt-devel
 
 - name: Sysstat should be starting
   service: name=sysstat state=started enabled=yes

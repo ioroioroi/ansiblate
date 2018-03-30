@@ -1,0 +1,89 @@
+---
+# prometheus本体インストール
+- name: Create prometheus group
+  group:
+    name: prometheus
+    state: present
+
+- name: Create prometheus user
+  user:
+    name: prometheus
+    shell: /sbin/nologin
+    group: prometheus
+    createhome: yes
+    state: present
+
+- name: Check if Prometheus is installed
+  sudo: no
+  ignore_errors: yes
+  command: test -e /usr/local/prometheus
+  register: is_prometheus_installed
+
+- name: Download Prometheus
+  sudo: yes
+  get_url: url={{ prometheus_url }} dest={{ install_dir }}
+  when: is_prometheus_installed | failed
+
+- name: Extract prometheus
+  sudo: yes
+  unarchive: copy=no src={{ install_dir }}/{{ prometheus_archive }} dest={{ install_dir }}
+  when: is_prometheus_installed | failed
+
+- name: Remove downloaded archive
+  sudo: yes
+  shell: "rm -f {{ install_dir }}/{{ prometheus_archive }}"
+  when: is_prometheus_installed | failed
+
+- name: Create symboliclink
+  file:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: prometheus
+    group: prometheus
+    state: link
+  with_items:
+    - { src: '{{ install_dir }}/{{ prometheus_dir }}', dest: '{{ prometheus_dir_symlink }}' }
+    - { src: '{{ install_dir }}/{{ prometheus_dir }}/prometheus', dest: '{{ prometheus_bin_symlink }}' }
+    - { src: '{{ install_dir }}/{{ prometheus_dir }}/promtool', dest: '{{ prometheus_tool_symlink }}' }
+
+- name: Chown PROMETHEUS_HOME
+  file:
+    path: '{{ install_dir }}/{{ prometheus_dir }}'
+    state: directory
+    owner: prometheus
+    group: prometheus
+    recurse: yes
+
+- name: Make property directories for prometheus
+  file:
+    path: "/etc/prometheus"
+    state: directory
+
+- name: Create symboliclink of config files
+  file:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: prometheus
+    group: prometheus
+    state: link
+  with_items:
+    - { src: '{{ install_dir }}/{{ prometheus_dir }}/console_libraries', dest: /etc/prometheus/console_libraries }
+    - { src: '{{ install_dir }}/{{ prometheus_dir }}/consoles', dest: /etc/prometheus/consoles }
+    - { src: '{{ install_dir }}/{{ prometheus_dir }}/prometheus.yml', dest: /etc/prometheus/prometheus.yml }
+
+- name: Set CONST
+  lineinfile:
+    path: /etc/default/prometheus
+    insertafter: EOF
+    line: 'OPTIONS="--config.file=/etc/prometheus/prometheus.yml --web.console.libraries=/etc/prometheus/console_libraries --web.console.templates=/etc/prometheus/consoles"'
+    create: yes
+  when: is_prometheus_installed | failed
+
+- name: Add prometheus as service
+  template: src=prometheus.service.j2 dest=/etc/systemd/system/prometheus.service owner=root group=root mode=0755
+
+- name: Force systemd to reread configs
+  systemd: daemon_reload=yes
+
+- name: prometheus should be started
+  service: name=prometheus enabled=yes state=started

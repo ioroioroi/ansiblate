@@ -1,0 +1,31 @@
+redmine_owner: apache
+redmine_dir: /var/lib/redmine
+
+view_customize_url: "https://github.com/onozaty/redmine-view-customize.git"
+view_customize_dir: "{{ redmine_dir }}/plugins/view_customize"
+
+clipboard_image_paste_url: "https://github.com/peclik/clipboard_image_paste.git"
+clipboard_image_paste_dir: "{{ redmine_dir }}/plugins/clipboard_image_paste"
+
+redmine_issue_templates_url: "https://github.com/akiko-pusu/redmine_issue_templates.git"
+redmine_issue_templates_dir: "{{ redmine_dir }}/plugins/redmine_issue_templates"
+
+redmine_knowledgebase_url: "https://github.com/alexbevi/redmine_knowledgebase.git"
+redmine_knowledgebase_dir: "{{ redmine_dir }}/plugins/redmine_knowledgebase"
+
+redmine_backlogs_url: "https://github.com/backlogs/redmine_backlogs.git"
+redmine_backlogs_dir: "{{ redmine_dir }}/plugins/redmine_backlogs"
+
+redmine_work_time_url: "https://github.com/tkusukawa/redmine_work_time.git"
+redmine_work_time_dir: "{{ redmine_dir }}/plugins/redmine_work_time"
+
+
+# easygantt_url は事前に公式サイト（https://www.easyredmine.com/redmine-gantt-plugin）よりメアド登録をしてリンクを取得し, 下記にコピーしてください.
+easygantt_url     : "https://mautic2018.easyredmine.com/r/e9c21a6aaa91ee1ac47293c2e?ct=YTo1OntzOjY6InNvdXJjZSI7YToyOntpOjA7czoxNDoiY2FtcGFpZ24uZXZlbnQiO2k6MTtpOjMyO31zOjU6ImVtYWlsIjtpOjc2O3M6NDoic3RhdCI7czoxMzoiNWE4ZmIzMWZhZmY1ZiI7czo0OiJsZWFkIjtpOjMzNDM2MjtzOjc6ImNoYW5uZWwiO2E6MTp7czo1OiJlbWFpbCI7aTo3Njt9fQ%3D%3D&utm_source=newsletter&utm_medium=email&utm_campaign=TRG_1801-gantt-01-installation-package-eng"
+easygantt_archive : "EasyGanttFree.zip"
+
+# redmine_agile_url は事前に公式サイト（https://www.redmineup.com/pages/plugins/agile#pricing）よりメアド登録をしてリンクを取得し, 下記にコピーしてください.
+redmine_agile_url     : "http://email.redmineup.com/c/eJxFjkuKwzAQRE8jL40-3XJroUVgyDVCS2olIv4Ex4OvP_JqoKhFUVS9EisGcmloETnIROQzuhQeAFQCwVQzGQ9Ogd6lLG2V38-4cJuHV8REmZwLla3pTW80iljWPgEWTjDM8XUcH-Vuyt67zvMc_0fytvRsblnWrzwWXvkpe0_AmoDK3Y_tLatyP8ZWg8JSdE0BqhddUJfMZGii2j1f-Hv8Fh7btm-toz4vwuvhD-PTQ9g"
+redmine_agile_archive : "redmine_agile-1_4_5-light.zip"
+
+install_dir     : "/tmp"

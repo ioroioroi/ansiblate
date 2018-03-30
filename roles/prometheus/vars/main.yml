@@ -1,0 +1,8 @@
+prometheus_version : "2.1.0"
+prometheus_dir : "prometheus-{{ prometheus_version }}.linux-amd64"
+prometheus_archive : "{{ prometheus_dir }}.tar.gz"
+prometheus_url     : "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/{{ prometheus_archive }}"
+install_dir     : "/usr/local/src"
+prometheus_dir_symlink     : "/usr/local/prometheus"
+prometheus_bin_symlink     : "/usr/local/bin/prometheus"
+prometheus_tool_symlink     : "/usr/local/bin/promtool"

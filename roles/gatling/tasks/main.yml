@@ -11,7 +11,7 @@
   sudo: yes
   shell: "rm -f {{ install_dir }}/{{ gatling_archive }}.zip"
 
-- name: Create symboliclink for gatling.sh and recorder.sh
+- name: Add GATLING_HOME to PATH
   lineinfile:
     path: /etc/profile
     insertafter: EOF
@@ -29,3 +29,4 @@
   with_items:
     - { src: '{{ install_dir }}/{{ gatling_dir }}/bin/gatling.sh', dest: '/usr/local/bin/gatling' }
     - { src: '{{ install_dir }}/{{ gatling_dir }}/bin/recorder.sh'   , dest: '/usr/local/bin/recorder' }
+    - { src: '{{ install_dir }}/{{ gatling_dir }}', dest: '/usr/local/gatling' }

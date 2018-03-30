@@ -1,0 +1,21 @@
+- name: Add group for WR
+  group: name=hp_user
+
+- name: Add user for WR
+  user: name=hp_user group={{ item }} password=$6$npK86qSDEJJjhpvO$GwKwIpsnx.oXSBtehWiit4PXnMIUoPDuIO9aIQJu0hnP6x9AgkcmYfGrXxm9bNjbQ631GVrNBOtmrNvo6wNzz/
+  with_items:
+    - hp_user
+    - wheel
+
+- name: PasswdAuth enabled
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.before }}"
+    line: "{{ item.after }}"
+  with_items:
+    - {before: '^#PasswordAuthentication yes', after: 'PasswordAuthentication yes'}
+    - {before: '^#PermitEmptyPasswords no', after: 'PermitEmptyPasswords no'}
+    - {before: '^PasswordAuthentication no', after: '#PasswordAuthentication no'}
+
+- name: SSH Service restart
+  service: name=sshd state=restarted enabled=yes

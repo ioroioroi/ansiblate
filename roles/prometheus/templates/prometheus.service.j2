@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus Service
+After=syslog.target prometheus.service
+Wants=network-online.target
+
+[Service]
+# User=prometheus # なぜかこれを指定していると起動できない...権限が足りない？
+Type=simple
+EnvironmentFile=-/etc/default/prometheus
+ExecStart={{ prometheus_bin_symlink }} $OPTIONS
+PrivateTmp=true
+
+Restart=always
+[Install]
+WantedBy=multi-user.target

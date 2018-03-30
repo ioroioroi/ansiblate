@@ -1,2 +1,2 @@
-oracle_java_url: http://download.oracle.com/otn-pub/java/jdk/8u144-b01/090f390dda5b47b9b721c7dfaa008135/jdk-8u144-linux-x64.rpm
-oracle_java_path: /usr/local/src/jdk-8u66-linux-x64.rpm
+oracle_java_url: http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.rpm
+oracle_java_path: /usr/local/src/jdk-8u161-linux-x64.rpm

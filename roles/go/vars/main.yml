@@ -1,0 +1,6 @@
+go_version : "1.9.3"
+go_dir : "go{{ go_version }}"
+go_archive : "{{ go_dir }}.linux-amd64.tar.gz"
+go_url     : "https://dl.google.com/go/{{ go_archive }}"
+install_dir     : "/usr/local/src"
+go_symlink     : "/usr/local/go"
