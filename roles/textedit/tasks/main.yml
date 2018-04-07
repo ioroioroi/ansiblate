@@ -1,0 +1,72 @@
+---
+- name: Include vars
+  include_vars:
+    file: ../files/files.yml
+
+- name: Insert line before the text
+  delegate_to: "{{ item.targetIP }}"
+  ignore_errors: yes
+  lineinfile:
+    state: present
+    backup: yes
+    path: "{{ item.filepath }}"
+    insertbefore: "{{ item.targetline }}"
+    line: "{{ item.insertline }}"
+  with_items: "{{ files.insertline_before }}"
+
+- name: Insert line after the text
+  delegate_to: "{{ item.targetIP }}"
+  ignore_errors: yes
+  lineinfile:
+    state: present
+    backup: yes
+    path: "{{ item.filepath }}"
+    insertafter: "{{ item.targetline }}"
+    line: "{{ item.insertline }}"
+  with_items: "{{ files.insertline_after }}"
+
+- name: Replace the line matching regexp of a file
+  delegate_to: "{{ item.targetIP }}"
+  ignore_errors: yes
+  lineinfile:
+    state: present
+    backup: yes
+    backrefs: yes
+    path: "{{ item.filepath }}"
+    regexp: "{{ item.targetline }}"
+    line: "{{ item.insertline }}"
+  with_items: "{{ files.replaceline_regexp }}"
+
+
+- name: Delete line in the match regexp of a file
+  delegate_to: "{{ item.targetIP }}"
+  ignore_errors: yes
+  lineinfile:
+    state: absent
+    backup: yes
+    path: "{{ item.filepath }}"
+    regexp: "{{ item.targetline }}"
+  with_items: "{{ files.deleteline_regexp }}"
+
+- name: Replace word in the match regexp of a file
+  delegate_to: "{{ item.targetIP }}"
+  ignore_errors: yes
+  replace:
+    backup: yes
+    path: "{{ item.filepath }}"
+    regexp: "{{ item.targetword }}"
+    replace: "{{ item.replacetword }}"
+  with_items: "{{ files.replaceword_regexp }}"
+
+
+# lineinfileの使い方について
+#
+# insertafter:
+#   EOF => 挿入する対象のlineが、対象のファイルのどの行にも完全一致しなかった場合、バックアップ取得後そのlineをファイル末尾に追加する.
+#          完全一致する行があった場合、ファイルを更新せず、バックアップも取らずに終了する.
+#   regexp => 挿入する対象のlineが、対象のファイルのどの行にも完全一致しなかった場合、バックアップ取得後そのlineをファイル末尾に追加する.
+#             backrefs: yes になっていない場合は EOF と同じ扱いとなる.
+# http://koltatt.net/programing/ansible_lineinfile/
+# http://koltatt.net/programing/lineinfile_options/
+#
+# lininfile には backrefs という, 追加するlineも正規表現を使って追加させるオプションがありますが扱いが難しいため追加しておりません.

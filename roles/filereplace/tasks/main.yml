@@ -4,7 +4,6 @@
     file: ../files/files.yml
 
 - name: Replace file to templates/xx
-  delegate_to: "{{ item.targetIP }}"
   ignore_errors: yes
   template:
     src: "{{ item.replacefile }}"
@@ -16,7 +15,6 @@
   with_items: "{{ files.replace_file }}"
 
 - name: Replace file to directories/xx
-  delegate_to: "{{ item.targetIP }}"
   ignore_errors: yes
   copy:
     backup: yes

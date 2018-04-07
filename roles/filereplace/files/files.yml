@@ -1,0 +1,17 @@
+files:
+  replace_file:   # targetfileで指定するファイルを作成するディレクトリ先は既に作成されていることが前提. parmission類の変更のみではバックアップは作成されません
+    - replacefile: sample.txt.j2
+      targetfile: /tmp/sample.txt
+      owner: username
+      group: groupname
+      mode: 777
+
+    - replacefile: sample.zip
+      targetfile: /tmp/
+      owner: root
+      group: root
+      mode: 644
+
+  replace_directory:    # directoryの配下を再帰的にコピーする. 階層とファイル名が一致する場合, backupを作成して置き換えます.
+    - replacedirectory: ../directories/sample
+      targetdirectory: /tmp/

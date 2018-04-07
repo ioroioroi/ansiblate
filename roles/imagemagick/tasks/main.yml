@@ -1,0 +1,20 @@
+---
+- name: check remi-release-7
+  stat: path=/etc/yum.repos.d/remi-php70.repo
+  register: remi_release_7
+
+- name: Install remi-release-7
+  yum:
+    name: http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+    state: latest
+  when: remi_release_7.stat.exists == false
+
+- name: Install utility packages
+  yum: name={{ item }} enablerepo=remi state=latest
+  with_items:
+    - ImageMagick6-devel
+    - ImageMagick6-libs
+    - ImageMagick6
+
+- name: Sysstat should be starting
+  service: name=sysstat state=started enabled=yes

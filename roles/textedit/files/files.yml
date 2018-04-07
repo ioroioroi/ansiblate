@@ -1,0 +1,28 @@
+files:
+  insertline_before:   # targetlineに一致する行がなければ最終行に追加されます. ファイル中にinsertlineに完全一致する行がある場合, targetlineの有無に関わらずinsertは行われません
+    - filepath: /tmp/tmp.txt
+      targetline: ''
+      insertline: ''
+
+    - filepath: /tmp/tmp.txt
+      targetline: ''
+      insertline: ''
+
+  insertline_after:    # targetlineに一致する行がなければ最終行に追加されます. ファイル中にinsertlineに完全一致する行がある場合, targetlineの有無に関わらずinsertは行われません
+    - filepath: /tmp/tmp.txt
+      targetline: ''
+      insertline: ''
+
+  replaceline_regexp:    # targetlineに一致する行がなければ置き換えられません. また, 一致する行が複数行ある場合, その最後の行が置き換えられます. ファイル中にinsertlineに完全一致する行があっても, targetlineに一致すれば置き換えられます
+    - filepath: /tmp/tmp.txt
+      targetline: ''
+      insertline: ''
+
+  deleteline_regexp:     # targetlineに一致する行がなければ削除されません. また, 一致する行が複数行ある場合, その全ての行が削除されます
+    - filepath: /tmp/tmp.txt
+      targetline: ''
+
+  replaceword_regexp:    # targetwordに一致する箇所がなければ置き換えられません. また, 一致する箇所が複数ある場合, その全ての箇所が置き換えられます
+    - filepath: /tmp/tmp.txt
+      targetword: ''
+      replacetword: ''
