@@ -1,0 +1,4 @@
+files:
+  - debug_command: date; hostname; /usr/bin/ls -la /home/
+
+  - debug_command: date; hostname; /usr/bin/cat /etc/hosts

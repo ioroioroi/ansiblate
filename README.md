@@ -61,6 +61,15 @@
 * 冪等性を保証しないため, 不用意に複数回実施すると想定外の結果を返す可能性がある. 取り扱いに気をつけること.
 * 一括作業対象ノードには同一ユーザ, 同一パスワードでログインできることが実行の前提となる. （ユーザはansible.cfgで指定しているもの）
 
+```example of site.yml
+- name: Exec Action role
+  hosts: local_action
+  gather_facts: no
+  sudo: yes
+  roles:
+    - act-reachability
+    - act-debugcmd
+```
 
 ## Appendix
 1. Select the inventory file with option `-i`

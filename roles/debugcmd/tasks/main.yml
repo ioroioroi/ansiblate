@@ -1,0 +1,17 @@
+---
+- name: Include vars
+  include_vars:
+    file: ../files/files.yml
+
+- name: Exec shell command with confirming stdout
+  ignore_errors: yes
+  shell: "{{ item.debug_command }}"
+  register: results_array
+  with_items: "{{ files }}"
+
+- name: Debug
+  debug:
+    var: "{{ item.stdout_lines }}"
+  with_items: "{{ results_array.results }}"
+
+# 参考 : https://qiita.com/tbuchi888/items/031c918ce9e542a37cc4
