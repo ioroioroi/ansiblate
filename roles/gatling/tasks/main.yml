@@ -30,3 +30,10 @@
     - { src: '{{ install_dir }}/{{ gatling_dir }}/bin/gatling.sh', dest: '/usr/local/bin/gatling' }
     - { src: '{{ install_dir }}/{{ gatling_dir }}/bin/recorder.sh'   , dest: '/usr/local/bin/recorder' }
     - { src: '{{ install_dir }}/{{ gatling_dir }}', dest: '/usr/local/gatling' }
+
+- name: Chmod for gatling.sh, recorder.sh and etc..
+  file:
+    path: '{{ install_dir }}/{{ gatling_dir }}/bin/'
+    state: directory
+    mode: '755'
+    recurse: yes

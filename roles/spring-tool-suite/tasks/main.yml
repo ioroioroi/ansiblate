@@ -1,0 +1,89 @@
+---
+# SpringToolSuite(STS)本体インストール
+- name: Create springboot group
+  group:
+    name: springboot
+    state: present
+
+- name: Create springboot user
+  user:
+    name: springboot
+    shell: /sbin/nologin
+    group: springboot
+    createhome: yes
+    state: present
+
+- name: Check if sts is installed
+  sudo: no
+  ignore_errors: yes
+  command: test -e /usr/local/sts
+  register: is_sts_installed
+
+- name: Download sts
+  sudo: yes
+  get_url: url={{ sts_url }} dest={{ install_dir }}
+  when: is_sts_installed | failed
+
+- name: Extract sts
+  sudo: yes
+  unarchive: copy=no src={{ install_dir }}/{{ sts_archive }} dest={{ install_dir }}
+  when: is_sts_installed | failed
+
+- name: Remove downloaded archive
+  sudo: yes
+  shell: "rm -f {{ install_dir }}/{{ sts_archive }}"
+  when: is_sts_installed | failed
+
+# - name: Create symboliclink
+#   file:
+#     src: '{{ item.src }}'
+#     dest: '{{ item.dest }}'
+#     owner: sts
+#     group: sts
+#     state: link
+#   with_items:
+#     - { src: '{{ install_dir }}/{{ sts_dir }}', dest: '{{ sts_dir_symlink }}' }
+#     - { src: '{{ install_dir }}/{{ sts_dir }}/sts', dest: '{{ sts_bin_symlink }}' }
+#     - { src: '{{ install_dir }}/{{ sts_dir }}/promtool', dest: '{{ sts_tool_symlink }}' }
+
+- name: Chown sts_HOME
+  file:
+    path: '{{ install_dir }}/{{ sts_dir }}'
+    state: directory
+    owner: springboot
+    group: springboot
+    recurse: yes
+
+# - name: Make property directories for sts
+#   file:
+#     path: "/etc/sts"
+#     state: directory
+#
+# - name: Create symboliclink of config files
+#   file:
+#     src: '{{ item.src }}'
+#     dest: '{{ item.dest }}'
+#     owner: springboot
+#     group: springboot
+#     state: link
+#   with_items:
+#     - { src: '{{ install_dir }}/{{ sts_dir }}/console_libraries', dest: /etc/sts/console_libraries }
+#     - { src: '{{ install_dir }}/{{ sts_dir }}/consoles', dest: /etc/sts/consoles }
+#     - { src: '{{ install_dir }}/{{ sts_dir }}/sts.yml', dest: /etc/sts/sts.yml }
+#
+# - name: Set CONST
+#   lineinfile:
+#     path: /etc/default/sts
+#     insertafter: EOF
+#     line: 'OPTIONS="--config.file=/etc/sts/sts.yml --web.console.libraries=/etc/sts/console_libraries --web.console.templates=/etc/sts/consoles"'
+#     create: yes
+#   when: is_sts_installed | failed
+#
+# - name: Add sts as service
+#   template: src=sts.service.j2 dest=/etc/systemd/system/sts.service owner=root group=root mode=0755
+#
+# - name: Force systemd to reread configs
+#   systemd: daemon_reload=yes
+#
+# - name: sts should be started
+#   service: name=sts enabled=yes state=started

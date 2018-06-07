@@ -1,0 +1,7 @@
+sts_dir : "spring-tool-suite-3.9.4.RELEASE-e4.7.3a-linux-gtk-x86_64"
+sts_archive : "{{ sts_dir }}.tar.gz"
+sts_url     : "http://download.springsource.com/release/STS/3.9.4.RELEASE/dist/e4.7/{{ sts_archive }}"
+install_dir     : "/usr/local/src"
+sts_dir_symlink     : "/usr/local/sts"
+sts_bin_symlink     : "/usr/local/bin/sts"
+sts_tool_symlink     : "/usr/local/bin/promtool"

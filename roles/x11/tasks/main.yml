@@ -1,0 +1,18 @@
+---
+- name: Install utility packages
+  yum: name="{{ item }}" enablerepo=epel state=latest
+  with_items:
+    - firefox
+    - "@X Window System"
+    - "@Japanese Support"
+
+- name: Replace the line matching regexp of a file
+  lineinfile:
+    state: present
+    backup: yes
+    path: /etc/ssh/sshd_config
+    regexp: '^#X11Forwarding'
+    line: 'X11Forwarding yes'
+
+- name: Sysstat should be starting
+  shell: sed -i.bak -e "s/id:[0-6]:initdefault:/id:5:initdefault:/" /etc/inittab

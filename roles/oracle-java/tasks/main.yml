@@ -11,3 +11,25 @@
 - name: Remove downloaded archive
   sudo: yes
   shell: "rm -f {{ oracle_java_path }}"
+
+- name: Set ENVCONST to oracle_java.sh
+  lineinfile:
+    path: /etc/profile.d/oracle_java.sh
+    insertafter: EOF
+    line: "{{ item }}"
+    create: yes
+  with_items:
+    - "{{oracle_java_env_java_home}}"
+    - "{{oracle_java_env_path}}"
+    - "{{oracle_java_env_classpath}}"
+
+- name: Set ENVCONST to oracle_java.csh
+  lineinfile:
+    path: /etc/profile.d/oracle_java.csh
+    insertafter: EOF
+    line: "{{ item }}"
+    create: yes
+  with_items:
+    - "{{oracle_java_env_java_home}}"
+    - "{{oracle_java_env_path}}"
+    - "{{oracle_java_env_classpath}}"
