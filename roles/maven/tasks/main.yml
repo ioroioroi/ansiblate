@@ -1,0 +1,45 @@
+---
+# - name: Check if Maven is installed
+#   sudo: no
+#   ignore_errors: yes
+#   command: test -e /usr/local/maven
+#   register: is_maven_installed
+# 
+# - name: Download Maven
+#   sudo: yes
+#   get_url: url={{ maven_url }} dest={{ install_dir }}
+#   when: is_maven_installed | failed
+#
+# - name: Extract Maven
+#   sudo: yes
+#   unarchive: copy=no src={{ install_dir }}/{{ maven_archive }} dest={{ install_dir }}
+#   when: is_maven_installed | failed
+#
+# - name: Remove downloaded archive
+#   sudo: yes
+#   shell: "rm -f {{ install_dir }}/{{ maven_archive }}"
+#   when: is_maven_installed | failed
+
+- name: Set ENVCONST to mavenenv.sh
+  lineinfile:
+    path: /etc/profile.d/mavenenv.sh
+    insertafter: EOF
+    line: '{{ item }}'
+    create: yes
+  with_items:
+    - 'export M3_HOME={{ install_dir }}/{{ maven_dir }}'
+    - 'M3=$M3_HOME/bin'
+    - 'export PATH=$M3:$PATH'
+  # when: is_maven_installed | failed
+
+- name: Set ENVCONST to mavenenv.csh
+  lineinfile:
+    path: /etc/profile.d/mavenenv.csh
+    insertafter: EOF
+    line: '{{ item }}'
+    create: yes
+  with_items:
+    - 'export M3_HOME={{ install_dir }}/{{ maven_dir }}'
+    - 'M3=$M3_HOME/bin'
+    - 'export PATH=$M3:$PATH'
+  # when: is_maven_installed | failed

@@ -1,0 +1,36 @@
+---
+- name: Check if Eclipse is installed
+  sudo: no
+  ignore_errors: yes
+  command: 'test -e {{ eclipse_symlink }}'
+  register: is_eclipse_installed
+
+- name: Download Eclipse
+  sudo: yes
+  get_url: url={{ eclipse_url }} dest={{ install_dir }}
+  when: is_eclipse_installed | failed
+
+- name: Extract Eclipse
+  sudo: yes
+  unarchive: copy=no src={{ install_dir }}/{{ eclipse_archive }} dest={{ install_dir }}
+  when: is_eclipse_installed | failed
+
+- name: Remove downloaded archive
+  sudo: yes
+  shell: "rm -f {{ install_dir }}/{{ eclipse_archive }}"
+  when: is_eclipse_installed | failed
+
+- name: Create symboliclink
+  file:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    state: link
+  with_items:
+    - { src: '{{ install_dir }}/eclipse/eclipse', dest: '{{ eclipse_symlink }}' }
+  when: is_eclipse_installed | failed
+
+- name: Install Firefox
+  become: yes
+  yum:
+    name: firefox
+    state: latest

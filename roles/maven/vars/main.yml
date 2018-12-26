@@ -1,0 +1,5 @@
+maven_version : "3.5.2"
+maven_dir : "apache-maven-{{ maven_version }}"
+maven_archive : "{{ maven_dir }}-bin.tar.gz"
+maven_url     : "http://ftp.tsukuba.wide.ad.jp/software/apache/maven/maven-3/{{ maven_version }}/binaries/{{ maven_archive }}"
+install_dir     : "/usr/local/src"

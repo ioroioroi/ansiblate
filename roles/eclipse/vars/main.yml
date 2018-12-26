@@ -1,0 +1,5 @@
+eclipse_dir : "eclipse"
+eclipse_archive : "{{ eclipse_dir }}-jee-oxygen-2-linux-gtk-x86_64.tar.gz"
+eclipse_url     : "http://ftp.yz.yamagata-u.ac.jp/pub/eclipse/technology/epp/downloads/release/oxygen/2/{{ eclipse_archive }}"
+install_dir     : "/usr/local/src"
+eclipse_symlink : "/usr/local/bin/eclipse"
